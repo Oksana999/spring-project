@@ -7,7 +7,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration;
-
+//https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/WebApplicationInitializer.html
 public class AppInitializer implements WebApplicationInitializer {
     public void onStartup(ServletContext servletContext)  {
         AnnotationConfigWebApplicationContext context

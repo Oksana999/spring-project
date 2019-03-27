@@ -1,8 +1,10 @@
 package springprojects.appconfig;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -23,10 +25,17 @@ import java.util.Properties;
 @EnableWebMvc
 @Configuration
 @ComponentScan("springprojects")
+//Configuration for transaction infrastructure
+//Part 1
 @EnableTransactionManagement
+@PropertySource("classpath:application.properties")
 public class AppConfig implements WebMvcConfigurer {
+    @Value("${spring.datasource.url}")
+    private String dataSourceUrl;
 
     @Override
+    // Comes from WebMvcConfigurer
+    // Configure jackson mapper for parsing http requests(@ResponseBody)
     public void configureMessageConverters(
             List<HttpMessageConverter<?>> converters) {
        /* messageConverters.add(createXmlHttpMessageConverter());*/
@@ -34,11 +43,13 @@ public class AppConfig implements WebMvcConfigurer {
     }
 
     @Bean
+    //For EntityManager Configuration(set up BD connection properties)
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em
                 = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());
         em.setPackagesToScan("springprojects");
+        //Set JPA provider, Hibernate implements JPA specification
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
         em.setJpaProperties(additionalProperties());
@@ -49,13 +60,15 @@ public class AppConfig implements WebMvcConfigurer {
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUrl("jdbc:postgresql://localhost:5432/competitiondb");
+        dataSource.setUrl(dataSourceUrl);
         dataSource.setUsername("postgres");
         dataSource.setPassword("123");
         return dataSource;
     }
 
     @Bean
+    //Configuration for transaction infrastructure
+    //Part 2, see @EnableTransactionManagement
     public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(emf);
