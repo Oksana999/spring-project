@@ -20,6 +20,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 @EnableWebMvc
@@ -32,6 +33,17 @@ import java.util.Properties;
 public class AppConfig implements WebMvcConfigurer {
     @Value("${spring.datasource.url}")
     private String dataSourceUrl;
+
+    @Value("${data.source.driver.class.name}")
+    private String dataSourceDriverClassName;
+
+    @Value("${data.source.user.name}")
+    private String dataSourceUserName;
+
+    @Value("${data.source.password}")
+    private String dataSourcePassword;
+
+
 
     @Override
     // Comes from WebMvcConfigurer
@@ -59,10 +71,10 @@ public class AppConfig implements WebMvcConfigurer {
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("org.postgresql.Driver");
+        dataSource.setDriverClassName(dataSourceDriverClassName);
         dataSource.setUrl(dataSourceUrl);
-        dataSource.setUsername("postgres");
-        dataSource.setPassword("123");
+        dataSource.setUsername(dataSourceUserName);
+        dataSource.setPassword(dataSourcePassword);
         return dataSource;
     }
 
@@ -81,4 +93,6 @@ public class AppConfig implements WebMvcConfigurer {
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQL94Dialect");
         return properties;
     }
+
+
 }

@@ -23,7 +23,7 @@ public class Competitor {
     @Column (name = "country")
     private String country;
     @Column
-    @OneToMany(mappedBy = "competitor")
+    @OneToMany(mappedBy = "competitor", fetch=FetchType.EAGER)
     private List<Evaluation> evaluation;
 
     @Transient
